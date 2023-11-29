@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "650690743438",
+    "project_id": "project-movie-cf97e",
+    "storage_bucket": "project-movie-cf97e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650690743438:android:83f29d312fa5f968418ddf",
+        "android_client_info": {
+          "package_name": "com.maxpayneman.aulayt_8"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP7L6g0Qz492tDAk5cpkeRlzjqKVmMnRA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
