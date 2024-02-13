@@ -1,3 +1,4 @@
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -7,32 +8,57 @@ class FilmeSelecionadoViewModel : ViewModel() {
     private val user = FirebaseAuth.getInstance().currentUser
     private val db = FirebaseFirestore.getInstance()
     private val _toastMessage = MutableLiveData<String>()
-
-
+    val toastMessage: LiveData<String>
+        get() = _toastMessage
+    // Função para definir mensagens
+    private fun definirMensagem(mensagem: String) {
+        _toastMessage.value = mensagem
+    }
 
 
     fun adicionarFilme(nome: String, descricao: String, imagemUrl: String) {
         user?.uid?.let { uid ->
-            val filmeRef = db.collection("FilmesUsuario").document(uid).collection("MeusFilmes").document()
+            val filmesUsuarioRef =
+                db.collection("FilmesUsuario").document(uid).collection("MeusFilmes")
 
-            val MeusFilmes = hashMapOf(
-                "id" to filmeRef.id,
-                "nome" to nome,
-                "descricao" to descricao,
-                "imagUrl" to imagemUrl
-            )
+            // Verifique se o nome já existe na coleção
+            filmesUsuarioRef
+                .whereEqualTo("nome", nome)
+                .get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (task.result?.isEmpty == true) {
+                            // O nome não existe, então você pode adicionar o filme
+                            user.uid.let { uid ->
+                                val filmeRef =
+                                    db.collection("FilmesUsuario").document(uid)
+                                        .collection("MeusFilmes").document()
+                                val MeusFilmes = hashMapOf(
+                                    "id" to filmeRef.id,
+                                    "nome" to nome,
+                                    "descricao" to descricao,
+                                    "imagUrl" to imagemUrl,
 
+                                    )
 
-            filmeRef
-                .set(MeusFilmes)
-                .addOnCompleteListener {
-                    _toastMessage.value = "Filme Adicionado!!"
-                }
-                .addOnFailureListener { e ->
-                    _toastMessage.value = "Erro ao adicionar filme: $e"
+                                filmeRef
+                                    .set(MeusFilmes)
+                                    .addOnCompleteListener {
+                                        definirMensagem("Filme Adicionado!!")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        definirMensagem("Erro ao adicionar filme: $e")
+                                    }
+                            }
+                        } else {
+                            // O nome já existe, faça algo aqui (por exemplo, exiba uma mensagem)
+                            definirMensagem("Esse filme já existe em sua lista.")
+                        }
+                    } else {
+                        definirMensagem("Erro ao verificar o nome do filme: ${task.exception}")
+                    }
                 }
         }
-
     }
 
     fun deletarFilme(uidFilme: String) {

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.maxpayneman.aulayt_8.databinding.ActivityFilmeSelecionadoMainBinding
 import com.maxpayneman.project_movie.Model.Filme
@@ -25,6 +26,11 @@ class FilmeSelecionadoMainActivity : AppCompatActivity() {
         val i = intent
         val bundle = i.extras
 
+        viewModel.toastMessage.observe(this, Observer { mensagem ->
+            Toast.makeText(this, "$mensagem", Toast.LENGTH_SHORT).show()
+
+        })
+
         if (bundle != null && bundle.containsKey("filmeimg")) {
             val nome = bundle.getString("filmename")
             val imagemUrl = bundle.getString("filmeimg")
@@ -40,7 +46,6 @@ class FilmeSelecionadoMainActivity : AppCompatActivity() {
                     viewModel.adicionarFilme(nome, descri, imagemUrl)
                     var filme = Filme(0, "$nome", "$data", "$imagemUrl", "$descri")
                     dbsql.adicionarFilme(filme)
-                    Toast.makeText(this, "Filme adicionado com sucesso!", Toast.LENGTH_SHORT).show()
                     finish()
                     startActivity(Intent(applicationContext, MeusFilmesMainActivity::class.java))
                 }

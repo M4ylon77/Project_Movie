@@ -23,6 +23,7 @@ class MeusFilmesViewModel : ViewModel() {
         carregarNomeUsuario()
     }
 
+
     private fun carregarMinhaLista() {
         auth.currentUser?.uid?.let { uid ->
             db.collection("FilmesUsuario").document(uid).collection("MeusFilmes")
